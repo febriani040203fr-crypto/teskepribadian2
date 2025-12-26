@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Tes Kepribadian Berdasarkan Warna</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 10px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .question {
+            margin-bottom: 20px;
+        }
+        .options label {
+            display: block;
+            margin: 6px 0;
+            cursor: pointer;
+        }
+        button {
+            padding: 12px 25px;
+            font-size: 16px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 8px;
+            background: #eef2f5;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>Tes Kepribadian Berdasarkan Warna</h1>
+<p><b>Petunjuk:</b> Pilih <u>satu</u> jawaban pada setiap nomor yang paling menggambarkan diri Anda.</p>
+
+<form id="testForm"></form>
+
+<div id="result" class="result" style="display:none;"></div>
+
+</div>
+
+<script>
+const questions = [
+    ["Suka mengatur", "Memiliki banyak teman", "Pendengar yang baik", "Teliti dalam bertindak"],
+    ["Bertindak langsung ke sasaran", "Banyak diskusi dalam pergaulan", "Menjalin relasi", "Melakukan hal dengan cepat"],
+    ["Sering memaksakan kehendak", "Senang bertemu orang lain", "Sering mengalah", "Berpikir rasional"],
+    ["Selalu ingin menang dalam kompetisi", "Menyenangkan untuk diajak bergaul", "Mudah terbawa perasaan", "Bertindak step by step"],
+    ["Orang yang pertama bertindak", "Antusias", "Suka memikirkan kebaikan bersama", "Memendam perasaan"],
+    ["Sulit mengalah", "Bangga pada diri sendiri", "Bersedia membantu kapanpun", "Mampu menganalisa"],
+    ["Sering dianggap berkuasa", "Periang & lincah", "Penuh pengertian", "Mampu berpikir mendalam"],
+    ["Bersemangat mencoba hal baru", "Senang berbagi", "Berusaha bersikap baik", "Melakukan segala hal sesuai aturan"],
+    ["Suka langsung bertindak", "Hangat dalam pergaulan", "Mudah puas", "Sistematis"],
+    ["Bergerak cepat", "Populer", "Membaikan diri di pimpinan", "Berpikir sebelum bertindak"],
+    ["Merasa kuat", "Banyak bicara", "Jarang menuntut", "Terencana"],
+    ["Tegas dan langsung", "Semangat", "Lembut & ramah", "Perlahan & serius"],
+    ["Cepat dan berfokus", "Ramah dan emosional", "Perlahan & hati-hati", "Detail dan teliti"],
+    ["Berusaha memimpin", "Senang mempengaruhi", "Diplomatis", "Membahas satu topik mendalam"],
+    ["Berani", "Ceria", "Kalem", "Kaku"],
+    ["Mandiri", "Optimis", "Suportif", "Perfeksionis"],
+    ["Tegas", "Humoris", "Tenang", "Serius"],
+    ["Yakin", "Spontan", "Sabar", "Merenung"],
+    ["Egois", "Pelupa", "Cenderung pasif", "Ragu-ragu"],
+    ["Tidak pedulian", "Suka beralih perhatian", "Masa bodoh", "Suka mengkritik"]
+];
+
+const colors = ["merah", "kuning", "hijau", "biru"];
+const descriptions = {
+    merah: "Merah (Dominan/Pemimpin): Berani, berorientasi pada hasil, cepat, dan kompetitif. Mereka menyukai tantangan, giat bekerja, namun bisa terlihat kasar.",
+    kuning: "Kuning (Inspiratif/Optimis): Ceria, komunikatif, kreatif, dan antusias. Mereka pandai bergaul dan membawa energi positif, tetapi kurang fokus pada detail.",
+    hijau: "Hijau (Stabil/Pendukung): Sabar, tenang, ramah, dan merupakan pemain tim yang tangguh. Menyukai stabilitas dan menghindari konflik.",
+    biru: "Biru (Analitis/Teliti): Sistematis, kritis, logis, dan memperhatikan detail. Bekerja dengan presisi tinggi dan fokus pada kualitas."
+};
+
+const form = document.getElementById("testForm");
+
+questions.forEach((q, i) => {
+    const questionDiv = document.createElement("div");
+    questionDiv.className = "question";
+    questionDiv.innerHTML = `<b>${i+1}.</b>`;
+    
+    q.forEach((opt, idx) => {
+        const optionsDiv = document.createElement("div");
+        optionsDiv.className = "options";
+        optionsDiv.innerHTML = `
+            <label>
+                <input type="radio" name="q${i}" value="${colors[idx]}" required>
+                ${opt}
+            </label>
+        `;
+        questionDiv.appendChild(optionsDiv);
+    });
+    form.appendChild(questionDiv);
+});
+
+const submitBtn = document.createElement("button");
+submitBtn.type = "submit";
+submitBtn.textContent = "Lihat Hasil";
+form.appendChild(submitBtn);
+
+form.addEventListener("submit", function(e){
+    e.preventDefault();
+
+    let score = { merah:0, kuning:0, hijau:0, biru:0 };
+
+    questions.forEach((_, i) => {
+        const selected = document.querySelector(`input[name="q${i}"]:checked`).value;
+        score[selected]++;
+    });
+
+    const maxScore = Math.max(...Object.values(score));
+    const dominant = Object.keys(score).filter(c => score[c] === maxScore);
+
+    let resultHTML = "<h2>Hasil Tes Anda</h2>";
+    resultHTML += `<p><b>Skor:</b><br>
+        Merah: ${score.merah}<br>
+        Kuning: ${score.kuning}<br>
+        Hijau: ${score.hijau}<br>
+        Biru: ${score.biru}</p><hr>`;
+
+    dominant.forEach(c => {
+        resultHTML += `<p>${descriptions[c]}</p>`;
+    });
+
+    document.getElementById("result").innerHTML = resultHTML;
+    document.getElementById("result").style.display = "block";
+});
+</script>
+
+</body>
+</html>
